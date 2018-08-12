@@ -16,6 +16,8 @@ class Bootp(IntEnum):
     Request = 3
     Decline = 4
     Ack  = 5
+    Nak = 6
+    Release = 7
 
 
 def dhcp_discover():
@@ -42,12 +44,18 @@ def dhcp_request(pkt):
 
 
 def dhcp(pkt):
-    #print pkt.display()
-    #print "#############################################################"
+    print pkt.display()
+    print "#############################################################"
     if pkt.haslayer(DHCP) and pkt['DHCP'].options[0][1] == Bootp.Offer:
         dhcp_request(pkt)
     elif pkt.haslayer(DHCP) and pkt['DHCP'].options[0][1] == Bootp.Ack:
         print "Server Acknowledged"
+        sys.exit(0)
+    elif pkt.haslayer(DHCP) and pkt['DHCP'].options[0][1] == Bootp.Decline:
+        print "Server Declined"
+        sys.exit(0)
+    elif pkt.haslayer(DHCP) and pkt['DHCP'].options[0][1] == Bootp.Nak:
+        print "Server Nak"
         sys.exit(0)
 
 
